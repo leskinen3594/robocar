@@ -15,7 +15,7 @@
  * Create deliverstoken as volatile variable
  * tells the compiler that the value of the variable may change at any time
  * not to optimize anything this variable
-*/
+ */
 volatile MQTTClient_deliveryToken deliveredtoken;
 
 /**
@@ -24,7 +24,7 @@ volatile MQTTClient_deliveryToken deliveredtoken;
  * correctly published by matching the delivery tokens returned from calls to
  * MQTTClient_publish() and MQTTClient_publishMessage() with the tokens passed
  * to this callback.
-*/
+ */
 void delivered(void *context, MQTTClient_deliveryToken dt) {
     printf("Message with token value %d delivery confirmed\n", dt);
     deliveredtoken = dt;

@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     /**
      * Create client object and token
      * Initialize connect options and publish message
-    */
+     */
     MQTTClient client;
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
     MQTTClient_message pubmsg           = MQTTClient_message_initializer;
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     /**
      * The delivery token can be used in a waitForCompletion call
      * to synchronize on the completion of the MQTT packet exchange
-    */
+     */
     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
     printf("Message with delivery token %d delivered\n", token);
 
