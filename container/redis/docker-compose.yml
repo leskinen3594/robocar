@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+    redis:
+        container_name: myredis
+        image: arm32v7/redis:5.0-alpine
+        restart: unless-stopped
+        ports:
+          - "6379:6379"
+        command: redis-server /usr/local/etc/redis/redis.conf
+        volumes:
+          - ./data:/data # Used for persisting data
+          - ./conf:/usr/local/etc/redis # Used for configuring redis
+
+volumes:
+    data:
+    conf:
