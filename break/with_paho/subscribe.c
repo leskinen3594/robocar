@@ -4,10 +4,10 @@
 #include "pahomqtt/src/MQTTClient.h"
 
 /** MQTT broker config */
-#define ADDRESS     "tcp://localhost:1883"
+#define ADDRESS     "tcp://127.0.0.1:1883"
 #define CLIENTID    "8d893304-5122-4000-9564-efdc08357a6f"
-#define TOPIC       "topic/testc"
-#define QOS         2
+#define TOPIC       "caro_bot/#"
+#define QOS         1
 #define TIMEOUT     10000L
 
 
@@ -74,8 +74,8 @@ int main(int argc, char **argv) {
     /** Setting connect options and Authen */
     conn_opts.keepAliveInterval         = 10;
     conn_opts.cleansession              = 1;
-    conn_opts.username                  = "guest";
-    conn_opts.password                  = "pass123";
+    conn_opts.username                  = "bot";
+    conn_opts.password                  = "P@ssw0rd";
 
     /** Connect to broker */
     if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS) {
