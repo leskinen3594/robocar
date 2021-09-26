@@ -38,7 +38,7 @@ func main() {
 	 * DELETE	method	- ...
 	 */
 	// Group for request interacted w/ database
-	// router.Use(middlewares.Logger())
+	router.Use(middlewares.Logger())
 	apiRoute := router.Group("/api")
 	{
 		apiRoute.GET("/users", userHandler.GetUsers)

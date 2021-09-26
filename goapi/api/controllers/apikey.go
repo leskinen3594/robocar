@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"goapi/api/service"
 	"goapi/caching"
 	"log"
@@ -24,13 +25,15 @@ func NewAPIkeyHandler(apiSrv service.APIkeyService) apiHandler {
 	return apiHandler{apiSrv: apiSrv}
 }
 
-// GET api key and caching in memory
+// Query username, mac address form api key and caching in memory
 func (h apiHandler) GetUserFromKey(ctx *gin.Context) {
-	var p PostReceiver
-	p.APIkey = ctx.PostForm("api_key") // api_key: ZG9sbHk7pJIhnO3ppHQvMS2-P9VR5XS2
-	// fmt.Println("api key = ", p.APIkey)
+	// api_key: ZG9sbHk7pJIhnO3ppHQvMS2-P9VR5XS2
 
-	userFromKey, err := h.apiSrv.GetUserFromKey(p.APIkey)
+	// Get variable from middlewares
+	key := ctx.MustGet("api_key").(string)
+	fmt.Println("api key = ", key)
+
+	userFromKey, err := h.apiSrv.GetUserFromKey(key)
 	if err != nil {
 		// Handle error ; api key not found in database
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -43,7 +46,7 @@ func (h apiHandler) GetUserFromKey(ctx *gin.Context) {
 	// Connect to redis
 	redisClient := caching.ConnectRedis()
 
-	// Call Setter - expire time = 60 second
+	// Call Setter - expire time = 3,600 second (1 hour)
 	redisErr := caching.SetRedis(redisClient, userFromKey.Username, userFromKey.MacAdress, 60)
 	if redisErr != nil {
 		// Handle error
@@ -63,8 +66,8 @@ func (h apiHandler) GetUserFromKey(ctx *gin.Context) {
 		log.Println("[key not found] ", redisErr)
 
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"error":  redisErr.Error(),
-			"detail": "username does not match",
+			"detail": redisErr.Error(),
+			"error":  "username does not match",
 		})
 
 		return
