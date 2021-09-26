@@ -3,15 +3,12 @@
 package controllers
 
 import (
-	"fmt"
 	"goapi/api/service"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
-
-var w http.ResponseWriter
 
 type userHandler struct {
 	usrSrv service.UserService
@@ -25,8 +22,8 @@ func NewUserHandler(usrSrv service.UserService) userHandler {
 func (h userHandler) GetUsers(ctx *gin.Context) {
 	users, err := h.usrSrv.GetUsers()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, err)
+		// Handle error
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -37,10 +34,10 @@ func (h userHandler) GetUsers(ctx *gin.Context) {
 func (h userHandler) GetUser(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 
-	user, err := h.usrSrv.GetUser(id)
+	user, err := h.usrSrv.GetUser(id) // Get Body
 	if err != nil {
-		// w.WriteHeader(http.StatusInternalServerError)
-		fmt.Println(err)
+		// Handle error
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 

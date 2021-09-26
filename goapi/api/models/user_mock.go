@@ -1,13 +1,7 @@
 package models
 
-import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-)
-
 type UserRepositoryMock struct {
-	UserRepositoryMock []UserMock `json:"Users"`
+	UserRepositoryMock []UserMock `json:"users"`
 }
 
 type UserMock struct {
@@ -20,18 +14,4 @@ type UserMock struct {
 	Is_Staff int    `json:"is_staff"`
 }
 
-func UserRepoMock() {
-	file, _ := ioutil.ReadFile("./goapi/resource/mock/user.json")
-
-	data := UserRepositoryMock{}
-
-	err := json.Unmarshal([]byte(file), &data)
-	if err != nil {
-		panic(err)
-	}
-
-	for i := 0; i < len(data.UserRepositoryMock); i++ {
-		fmt.Println("Product Id: ", data.UserRepositoryMock[i].UserID)
-		fmt.Println("Quantity: ", data.UserRepositoryMock[i].Username)
-	}
-}
+// Import data from json file

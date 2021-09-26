@@ -20,28 +20,37 @@ func main() {
 		panic(err)
 	}
 
-	// Users entity
+	// Users Entity
 	userRepo := models.NewUserRepositoryDB(db)
 	userService := service.NewUserService(userRepo)
 	userHandler := controllers.NewUserHandler(userService)
 
+	// APIkeys Entity
+	apiRepo := models.NewAPIkeyRepositoryDB(db)
+	apiService := service.NewAPIkeyService(apiRepo)
+	apiHandler := controllers.NewAPIkeyHandler(apiService)
+
 	/**
 	 * Router - endpoints
 	 * GET		method	- GetUserAll, GetUserByID, ...
-	 * POST		method	- NewUser, CreateAPIkey, ...
+	 * POST		method	- NewUser, CreateAPIkey, CheckAPIkey, ...
 	 * PUT		method	- ...
 	 * DELETE	method	- ...
 	 */
 	// Group for request interacted w/ database
-	router.Use(middlewares.Logger())
+	// router.Use(middlewares.Logger())
 	apiRoute := router.Group("/api")
 	{
 		apiRoute.GET("/users", userHandler.GetUsers)
 		apiRoute.GET("/users/:id", userHandler.GetUser)
+		apiRoute.Use(middlewares.CheckCache()).POST("/handshake", apiHandler.GetUserFromKey)
 	}
 
 	// Group for request interacted w/ robot
 	// robotRoute := router.Group("/robot")
+	// {
+	// 	robotRoute.POST("/handshake", )
+	// }
 
 	// Run server
 	host, port := configs.AppConfig()
