@@ -43,11 +43,7 @@ func (r userRepositoryDB) GetUserById(id int) (*User, error) {
 	return &user, nil
 }
 
-/**
- * Create new user
- * @Param ; rbt_id (int), uname (string), passwd(string),
- *			email(string), phone(string) or zero type value
- */
+// Create new user
 func (r userRepositoryDB) CreateUser(user User) (*User, error) {
 	return nil, nil
 }
