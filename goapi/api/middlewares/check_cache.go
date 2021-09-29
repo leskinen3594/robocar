@@ -25,10 +25,10 @@ func CheckCache() gin.HandlerFunc {
 		// fmt.Println("api key = ", p.APIkey)
 
 		// Connect to redis
-		redisClient := caching.ConnectRedis()
+		redisClient := caching.NewConnectionRedis()
 
 		// Caching ; Get
-		value, redisErr := caching.GetRedis(redisClient, p.Username)
+		value, redisErr := redisClient.GetRedis(p.Username)
 		if redisErr != nil {
 			// Error 'cause key (username) not found in memory
 			log.Println("[middlewares : key not found] ", redisErr)
@@ -43,6 +43,7 @@ func CheckCache() gin.HandlerFunc {
 			log.Printf("GET %s %s\n", p.Username, value)
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": "Ready",
+				"robot":   value,
 			})
 			ctx.Abort() // Stop
 		}

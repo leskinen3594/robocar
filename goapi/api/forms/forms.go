@@ -9,6 +9,6 @@ type APIkeyReceiver struct {
 
 type ControlReceiver struct {
 	// Control robot
-	Username string `json:"uname"`
-	Movement string `json:"movement"`
+	Username string `json:"username"`
+	Message  string `json:"message"`
 }

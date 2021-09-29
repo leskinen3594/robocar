@@ -10,12 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-/**
- * IF NOT username IN memory
- * QUERY username, mac_addr FROM database
- * WHERE api_key LIKE postform
- * THEN caching IN memory
- */
+// IF NOT username IN memory
+// QUERY username, mac_addr FROM database
+// WHERE api_key LIKE postform
+// THEN caching IN memory
 type apiHandler struct {
 	// Use service
 	apiSrv service.APIkeyService
@@ -44,37 +42,32 @@ func (h apiHandler) GetUserFromKey(ctx *gin.Context) {
 
 	// Caching in memory
 	// Connect to redis
-	redisClient := caching.ConnectRedis()
+	redisClient := caching.NewConnectionRedis()
 
 	// Call Setter - expire time = 3,600 second (1 hour)
-	redisErr := caching.SetRedis(redisClient, userFromKey.Username, userFromKey.MacAdress, 60)
-	if redisErr != nil {
+	redisSetErr := redisClient.SetRedis(userFromKey.Username, userFromKey.MacAdress, 3600)
+	if redisSetErr != nil {
 		// Handle error
-		log.Println("[can't set this key] ", redisErr)
-
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": redisErr.Error()})
-		return
+		log.Println("[can't set this key] ", redisSetErr)
+	} else {
+		// Caching successfully
+		log.Printf("SET %s %s\n", userFromKey.Username, userFromKey.MacAdress)
 	}
-
-	// After caching successfully
-	log.Printf("SET %s %s\n", userFromKey.Username, userFromKey.MacAdress)
 
 	// Call Getter - Check again username from POST == username from database
-	_, redisErr = caching.GetRedis(redisClient, userFromKey.Username)
-	if redisErr != nil {
+	val, redisGetErr := redisClient.GetRedis(userFromKey.Username)
+	if redisGetErr != nil {
 		// Handle error
-		log.Println("[key not found] ", redisErr)
+		log.Println("[key not found] ", redisGetErr)
 
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"detail": redisErr.Error(),
-			"error":  "username does not match",
-		})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "username does not match"})
 
 		return
+	} else {
+		// Response message if everything is OK
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "Connected",
+			"robot":   val,
+		})
 	}
-
-	// Response message if everything is OK
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Complete",
-	})
 }

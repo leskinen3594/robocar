@@ -1,28 +1,34 @@
 package caching
 
 import (
+	"errors"
 	"time"
 
 	"github.com/go-redis/redis"
 )
 
+type RedisConnection struct {
+	redisClient *redis.Client
+}
+
 // Connection config
-func ConnectRedis() *redis.Client {
-	redisClient := redis.NewClient(&redis.Options{
+func NewConnectionRedis() (conn *RedisConnection) {
+	rc := redis.NewClient(&redis.Options{
 		Addr:     "192.168.192.2:6379",
 		Password: "",
 		DB:       0,
 	})
 
-	// pong, err := redisClient.Ping().Result()
+	// pong, err := rc.Ping().Result()
 	// fmt.Println(pong, err)
 
-	return redisClient
+	conn = &RedisConnection{rc}
+	return conn
 }
 
 // Set key
-func SetRedis(rc *redis.Client, key string, val interface{}, timeEx time.Duration) error {
-	err := rc.Set(key, val, timeEx*time.Second).Err()
+func (conn *RedisConnection) SetRedis(key string, val interface{}, timeEx time.Duration) error {
+	err := conn.redisClient.Set(key, val, timeEx*time.Second).Err()
 
 	if err != nil {
 		return err
@@ -32,11 +38,11 @@ func SetRedis(rc *redis.Client, key string, val interface{}, timeEx time.Duratio
 }
 
 // Get key
-func GetRedis(rc *redis.Client, key string) (string, error) {
-	val, err := rc.Get(key).Result()
+func (conn *RedisConnection) GetRedis(key string) (string, error) {
+	val, err := conn.redisClient.Get(key).Result()
 
 	if err != nil {
-		return "", err
+		return "", errors.New("key not found")
 	}
 
 	return val, nil
