@@ -1,5 +1,0 @@
-This is develop branch.
-
-version 0.1:
-    - discord_bot
-    - web
