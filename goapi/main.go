@@ -25,7 +25,7 @@ func main() {
 
 	// Connect to MQTT
 	mqttConnection := messagebroker.NewConnectionMQTT()
-	mqttConnection.Subscribe("/mR_robot/#")
+	mqttConnection.Subscribe("/mR_robot/ws/#")
 
 	// Connect to Redis
 	redisConnction := caching.NewConnectionRedis()
