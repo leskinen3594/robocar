@@ -52,17 +52,8 @@ func onMessageReceived() func(client mqtt.Client, msg mqtt.Message) {
 	return func(client mqtt.Client, msg mqtt.Message) {
 		log.Printf("Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
 
-		event := string(msg.Payload())
-		fmt.Println("event = ", event)
-
-		// Websocket - write to frontend
-
-		// err := json.Unmarshal([]byte(msg.Payload()), &event)
-		// if err != nil {
-		// 	log.Println("Unmarshal message fails: ", err)
-		// }
-
-		// influxConn.Insert(&event)
+		// event := string(msg.Payload())
+		// fmt.Println("event = ", event)
 	}
 }
 

@@ -61,6 +61,7 @@ func main() {
 	robotRoute := router.Group("/robot")
 	{
 		robotRoute.POST("/handshake", robotHandler.Handshake) // Publish to robot
+		robotRoute.POST("/movement", robotHandler.Movement)
 	}
 
 	// Run server
