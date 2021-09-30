@@ -253,12 +253,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println("$");*/
 
     /* ---- Publisher ---- */
-    String pub_api = head_topic + username;
-    const char* pub_topic = pub_api.c_str();  // Example topic: "/mR_robot/dolly"
+    String pub_api = head_topic + "ws/" + username;
+    const char* pub_topic = pub_api.c_str();  // Example topic: "/mR_robot/ws/dolly"
 
     // Create publish data
     char out[256];
     reflect["mac_addr"] = mac_addr;
+    reflect["username"] = username;
     
     // กำหนดเงื่อนไขที่แตกต่างกันตาม Topic
     /* ---- handshake ---- */
