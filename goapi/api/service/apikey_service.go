@@ -15,8 +15,8 @@ func NewAPIkeyService(apiRepo models.APIkeyRepository) APIkeyService {
 }
 
 // GET username, mac address from api key
-func (s apiService) GetUserFromKey(api_key string) (*APIkeyResponse, error) {
-	user_api, err := s.apiRepo.CheckAPIkey(api_key)
+func (s apiService) GetUserFromKey(api_key, uname string) (*APIkeyResponse, error) {
+	user_api, err := s.apiRepo.CheckAPIkey(api_key, uname)
 
 	if err == sql.ErrNoRows {
 		return nil, errors.New("key not found mismatch")

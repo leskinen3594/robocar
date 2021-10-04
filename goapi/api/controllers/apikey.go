@@ -30,15 +30,18 @@ func (h apiHandler) GetUserFromKey(ctx *gin.Context) {
 	// Get variable from middlewares
 	key := ctx.MustGet("api_key").(string)
 	fmt.Println("api key = ", key)
+	uname := ctx.MustGet("uname").(string)
+	fmt.Println("uname = ", uname)
 
-	userFromKey, err := h.apiSrv.GetUserFromKey(key)
+	userFromKey, err := h.apiSrv.GetUserFromKey(key, uname)
 	if err != nil {
 		// Handle error ; api key not found in database
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error":   err.Error(),
+			"success": false,
+		})
 		return
 	}
-
-	// ctx.JSON(http.StatusOK, userFromKey)
 
 	// Caching in memory
 	// Connect to redis
@@ -60,7 +63,10 @@ func (h apiHandler) GetUserFromKey(ctx *gin.Context) {
 		// Handle error
 		log.Println("[key not found] ", redisGetErr)
 
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "username does not match"})
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error":   "username does not match",
+			"success": false,
+		})
 
 		return
 	} else {
@@ -68,6 +74,7 @@ func (h apiHandler) GetUserFromKey(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "Connected",
 			"robot":   val,
+			"success": true,
 		})
 	}
 }

@@ -25,15 +25,15 @@ func main() {
 
 	// Connect to MQTT
 	mqttConnection := messagebroker.NewConnectionMQTT()
-	mqttConnection.Subscribe("/mR_robot/ws/#")
+	go mqttConnection.Subscribe("/mR_robot/ws/#")
 
 	// Connect to Redis
 	redisConnction := caching.NewConnectionRedis()
 
 	// Users Entity
-	// userRepo := models.NewUserRepositoryDB(db)
-	// userService := service.NewUserService(userRepo)
-	// userHandler := controllers.NewUserHandler(userService)
+	userRepo := models.NewUserRepositoryDB(db)
+	userService := service.NewUserService(userRepo)
+	userHandler := controllers.NewUserHandler(userService)
 
 	// APIkeys Entity
 	apiRepo := models.NewAPIkeyRepositoryDB(db)
@@ -52,8 +52,8 @@ func main() {
 	// router.Use(middlewares.Logger())	// Use custom logger
 	apiRoute := router.Group("/api")
 	{
-		// apiRoute.GET("/users", userHandler.GetUsers)
-		// apiRoute.GET("/users/:id", userHandler.GetUser)
+		apiRoute.GET("/users", userHandler.GetUsers)
+		apiRoute.GET("/users/:id", userHandler.GetUser)
 		apiRoute.Use(middlewares.CheckCache()).POST("/handshake", apiHandler.GetUserFromKey)
 	}
 

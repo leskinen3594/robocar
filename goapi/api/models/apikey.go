@@ -12,5 +12,5 @@ type APIkey struct {
 }
 
 type APIkeyRepository interface {
-	CheckAPIkey(string) (*APIkey, error)
+	CheckAPIkey(string, string) (*APIkey, error)
 }

@@ -6,5 +6,5 @@ type APIkeyResponse struct {
 }
 
 type APIkeyService interface {
-	GetUserFromKey(string) (*APIkeyResponse, error)
+	GetUserFromKey(string, string) (*APIkeyResponse, error)
 }

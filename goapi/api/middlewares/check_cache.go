@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"goapi/api/forms"
 	"goapi/caching"
 	"log"
@@ -17,11 +16,14 @@ func CheckCache() gin.HandlerFunc {
 		// Bind request body - JSON
 		if err := ctx.ShouldBindJSON(&p); err != nil {
 			log.Println(err)
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error":   err.Error(),
+				"success": false,
+			})
 			return
 		}
 
-		fmt.Println("username = ", p.Username)
+		// fmt.Println("username = ", p.Username)
 		// fmt.Println("api key = ", p.APIkey)
 
 		// Connect to redis
@@ -34,6 +36,7 @@ func CheckCache() gin.HandlerFunc {
 			log.Println("[middlewares : key not found] ", redisErr)
 
 			// Set api_key variable
+			ctx.Set("uname", p.Username)
 			ctx.Set("api_key", p.APIkey)
 
 			// Next to handler
@@ -44,6 +47,7 @@ func CheckCache() gin.HandlerFunc {
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": "Ready",
 				"robot":   value,
+				"success": true,
 			})
 			ctx.Abort() // Stop
 		}
