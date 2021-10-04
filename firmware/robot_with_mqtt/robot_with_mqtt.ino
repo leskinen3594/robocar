@@ -118,7 +118,6 @@ void loop() {
           dangerZone = true;
 
         } else {
-          //MotorForward();
           dangerZone = false;
         }
     } // END detect
@@ -276,15 +275,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
     }
 
     /* ---- Movement ---- */
-    // Do it first if dangerZone is true
-    // The robot is blocked
-    if (dangerZone) {
-      //MotorStop();
-      reflect["robot_msg"] = "let me out!!";
-      size_t plength = serializeJson(reflect, out);
-      mqtt.publish(pub_topic, out, plength);
-    }
-     
     if ( !dangerZone && String(message) == "forward" ) {
       //Serial.println("Go ahead!!");
       MotorForward();
