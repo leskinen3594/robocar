@@ -67,7 +67,7 @@ void setup() {
     /* Connect to a WiFi network */
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, passwd);
-    Serial.print("Connecting");
+    //Serial.print("Connecting");
     while (WiFi.status() != WL_CONNECTED) {
       Serial.print(".");
       delay(3000);
@@ -88,8 +88,8 @@ void setup() {
 void loop() {
     // ถ้าการเชื่อมต่อไวไฟหาด จะพยายามต่อใหม่จนกว่าจะสำเร็จ
     if (mqtt.connected() == false) {
-        Serial.print( "WiFi Status : " );
-        Serial.println( WiFi.status() );
+        //Serial.print( "WiFi Status : " );
+        //Serial.println( WiFi.status() );
         if (WiFi.status() != WL_CONNECTED) {
             reconnectWiFi();
         }
@@ -99,7 +99,7 @@ void loop() {
     } // END reconnect
 
     /* Object detection */
-    /*unsigned long currentMillis = millis();
+    unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
@@ -109,17 +109,21 @@ void loop() {
 
         distanceCm = getDistanceCm();
 
-        if (distanceCm < 41.00) {
-          Serial.print("Distance (cm): ");
-          Serial.println(distanceCm);
+        // Check it, always
+        if (distanceCm < 36.00) {
+          //Serial.print("Distance (cm): ");
+          //Serial.println(distanceCm);
 
           MotorStop();
           dangerZone = true;
 
         } else {
+          //MotorForward();
           dangerZone = false;
         }
-    } // END detect*/
+    } // END detect
+
+    /* Do it here if want to publish real time! */
 
     // ถ้า MQTT ต่ออยู่แล้ว ก็ให้ทำงานใน callback
     mqtt.loop();
@@ -209,7 +213,7 @@ void connectMqtt() {
     mqtt.setServer(MQTT_SERVER, MQTT_PORT);
     mqtt.setCallback(callback);
 
-    Serial.print("MQTT connection... ");
+    //Serial.print("MQTT connection... ");
     if (mqtt.connect(MQTT_NAME, MQTT_USERNAME, MQTT_PASSWORD)) {
       Serial.println("MQTT connected");
 
@@ -232,8 +236,8 @@ void connectMqtt() {
 void callback(char* topic, byte* payload, unsigned int length) {
     // อ่านข้อความที่รับมา
     payload[length] = '\0';
-    String topic_str = topic, payload_str = (char*)payload;
-    Serial.println("sub - [" + topic_str + "]: " + payload_str);
+    //String topic_str = topic, payload_str = (char*)payload;
+    //Serial.println("sub - [" + topic_str + "]: " + payload_str);
 
     // username, message received from API
     char username[25] = "";
@@ -260,50 +264,60 @@ void callback(char* topic, byte* payload, unsigned int length) {
     char out[256];
     reflect["mac_addr"] = mac_addr;
     reflect["username"] = username;
+    reflect["distance"] = distanceCm;
     
     // กำหนดเงื่อนไขที่แตกต่างกันตาม Topic
     /* ---- handshake ---- */
     if ( String(message) == "Ahoy!" ) {
-      Serial.println( message );
-      reflect["robot_msg"] = "Yo-ho!";
-      size_t plength =  serializeJson(reflect, out);
+      //Serial.println( message );
+      reflect["robot_msg"] = "Yo-Ho!!";
+      size_t plength = serializeJson(reflect, out);
       mqtt.publish(pub_topic, out, plength);
     }
 
     /* ---- Movement ---- */
-    if ( String(message) == "forward" ) {
-      Serial.println("Go ahead!!");
+    // Do it first if dangerZone is true
+    // The robot is blocked
+    if (dangerZone) {
+      //MotorStop();
+      reflect["robot_msg"] = "let me out!!";
+      size_t plength = serializeJson(reflect, out);
+      mqtt.publish(pub_topic, out, plength);
+    }
+     
+    if ( !dangerZone && String(message) == "forward" ) {
+      //Serial.println("Go ahead!!");
       MotorForward();
       reflect["robot_msg"] = "ok, forward";
-      size_t plength =  serializeJson(reflect, out);
+      size_t plength = serializeJson(reflect, out);
       mqtt.publish(pub_topic, out, plength);
 
     } else if ( String(message) == "backward" ) {
-      Serial.println("Back back back!!");
+      //Serial.println("Back back back!!");
       MotorBackward();
       reflect["robot_msg"] = "ok, backward";
-      size_t plength =  serializeJson(reflect, out);
+      size_t plength = serializeJson(reflect, out);
       mqtt.publish(pub_topic, out, plength);
 
     } else if ( String(message) == "left" ) {
-      Serial.println("Turn Left");
+      //Serial.println("Turn Left");
       TurnLeft();
       reflect["robot_msg"] = "ok, left";
-      size_t plength =  serializeJson(reflect, out);
+      size_t plength = serializeJson(reflect, out);
       mqtt.publish(pub_topic, out, plength);
 
     } else if ( String(message) == "right" ) {
-      Serial.println("Turn Right");
+      //Serial.println("Turn Right");
       TurnRight();
       reflect["robot_msg"] = "ok, right";
-      size_t plength =  serializeJson(reflect, out);
+      size_t plength = serializeJson(reflect, out);
       mqtt.publish(pub_topic, out, plength);
 
     } else if ( String(message) == "stop" ) {
-      Serial.println("Stop!!");
+      //Serial.println("Stop!!");
       MotorStop();
       reflect["robot_msg"] = "ok, stop";
-      size_t plength =  serializeJson(reflect, out);
+      size_t plength = serializeJson(reflect, out);
       mqtt.publish(pub_topic, out, plength);
     }
 }
