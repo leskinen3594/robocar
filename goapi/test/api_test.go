@@ -40,14 +40,22 @@ func setupRouter() *gin.Engine {
 	// Connect to database
 	db, _ := sqlx.Connect(DB_DRIVER, dsn)
 
+	// Users Entity
+	// userRepo := models.NewUserRepositoryDB(db)
+	// userService := service.NewUserService(userRepo)
+	// userHandler := controllers.NewUserHandler(userService)
+
 	// APIkeys Entity
 	apiRepo := models.NewAPIkeyRepositoryDB(db)
 	apiService := service.NewAPIkeyService(apiRepo)
 	apiHandler := controllers.NewAPIkeyHandler(apiService)
 
 	apiRoute := r.Group("/api")
-	apiRoute.Use(middlewares.CheckCache()).POST("/handshake", apiHandler.GetUserFromKey)
-
+	{
+		// apiRoute.GET("/users", userHandler.GetUsers)
+		// apiRoute.GET("/users/:id", userHandler.GetUser)
+		apiRoute.Use(middlewares.CheckCache()).POST("/handshake", apiHandler.GetUserFromKey)
+	}
 	return r
 }
 
