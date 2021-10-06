@@ -240,7 +240,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
     // username, message received from API
     char username[25] = "";
-    char message[25]  = "";
+    char message[10]  = "";
 
     // Receiving JSON Data
     StaticJsonDocument<256> doc, reflect;
