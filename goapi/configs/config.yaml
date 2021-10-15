@@ -1,0 +1,11 @@
+app:
+  host: "192.168.1.22"
+  port: 8088
+
+db:
+  driver: "mysql"
+  host: "192.168.1.22"
+  # port: 3306
+  username: "root"
+  password: "@Mephis2015"
+  database: "robotic"

@@ -1,0 +1,32 @@
+# syntax=docker/dockerfile:1
+
+##
+## Build
+##
+FROM golang:1.17.1-alpine3.14 AS builder
+
+WORKDIR /build
+
+COPY . ./
+RUN go mod download
+
+RUN go build -o goapi-robocar
+
+##
+## Deploy
+##
+FROM alpine:3.14
+
+RUN adduser -S -D -H -h /app gopher
+USER gopher
+
+COPY --from=builder /build/goapi-robocar /app/
+
+WORKDIR /app
+
+COPY . ./
+
+EXPOSE 8088
+
+ENTRYPOINT ["./goapi-robocar"]
+
