@@ -25,8 +25,8 @@ const String mac_addr = WiFi.macAddress();
 const String head_topic = "/mR_robot/";
 
 // MQTT Broker
-#define MQTT_SERVER   "192.168.1.22"
-#define MQTT_PORT     1888
+#define MQTT_SERVER   "110.164.204.26"
+#define MQTT_PORT     25282
 #define MQTT_USERNAME "bot"
 #define MQTT_PASSWORD "P@ssw0rd"
 #define MQTT_NAME     "Last_Order"
@@ -264,7 +264,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     reflect["mac_addr"] = mac_addr;
     reflect["username"] = username;
     reflect["distance"] = distanceCm;
-    
+
     // กำหนดเงื่อนไขที่แตกต่างกันตาม Topic
     /* ---- handshake ---- */
     if ( String(message) == "Ahoy!" ) {
